@@ -1,0 +1,30 @@
+version: '3.3'
+
+volumes:
+  postgres_data:
+  staticfiles:
+
+services:
+  db:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./.env
+  web:
+    build: .
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+  nginx:
+    build: ./nginx
+    volumes:
+      - staticfiles:/code/staticfiles/
+    ports:
+      - 1337:80
+    depends_on:
+      - web
